@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "src/app.ts",
   "author": "M. Feroz Mirza",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "private": true,
   "devDependencies": {
     "@types/express": "^4.17.21",
