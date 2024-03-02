@@ -4,6 +4,9 @@ import express from "express";
 import conn from "./service/db-con";
 const app = express();
 const server = createServer(app);
+app.get("/", (req, res) => {
+    res.write("Hello from server.");
+});
 app.get("/messages/:turn/:userId/:", (req, res) => {
     const turn = parseInt(req.params.turn);
     const userId = parseInt(req.params.userId);

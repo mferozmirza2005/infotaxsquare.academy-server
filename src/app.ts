@@ -7,6 +7,10 @@ import conn from "./service/db-con";
 const app:Application = express();
 const server:HTTPServer = createServer(app);
 
+app.get("/", (req: Request, res: Response)=>{
+  res.write("Hello from server.");
+})
+
 app.get("/messages/:turn/:userId/:", (req: Request, res: Response)=>{
   const turn: number = parseInt(req.params.turn);
   const userId: number = parseInt(req.params.userId);
