@@ -1,13 +1,16 @@
-import mysql from "mysql";
+const mysql = require("mysql");
 const conn = mysql.createConnection({
-    host: "52.207.51.35",
     user: "devtest",
-    password: "4hGcAqwQPgfL$&",
+    host: "52.207.51.35",
     port: 3306,
+    password: "4hGcAqwQPgfL$&",
     database: "infotaxsquare_academy",
 });
 conn.connect(function (err) {
     if (err)
         throw err;
 });
-export default conn;
+
+module.exports = {
+    conn: conn,
+};

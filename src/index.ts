@@ -1,32 +1,43 @@
-import { Server as SocketServer, Socket } from "socket.io";
-import { createServer, Server as HTTPServer } from "http";
-import { roomData, usersChats } from "@/utils";
-import express, { Application, Request, Response } from "express";
-import conn from "./service/db-con";
+import { Socket, Server as SocketServer } from "@/node_modules/socket.io/dist/index";
+import { Application, Request, Response } from "express";
+import { Server as HTTPServer } from "http";
+import usersChats from "@/utils/usersChats";
+import roomData from "@/utils/roomData";
+import { CorsOptions } from "cors";
+
+const conn = require("./service/db-con").conn;
+const express = require("express");
+const http = require("http");
+const socket_io = require("socket.io");
 
 const app:Application = express();
-const server:HTTPServer = createServer(app);
-
-app.get("/", (req: Request, res: Response)=>{
-  res.write("Hello from server.");
-})
-
-app.get("/messages/:turn/:userId/:", (req: Request, res: Response)=>{
-  const turn: number = parseInt(req.params.turn);
-  const userId: number = parseInt(req.params.userId);
-  console.log(turn, userId);
-  conn.query(`SELECT * FROM chatapp_userschats WHERE senderId="${userId}" OR receiverId="${userId};`, function (err:Error, result:usersChats[]) {
-    if (err) throw err;
-    const data: usersChats[] = result.slice(turn,turn+10);
-    res.json(data);
-  });
-})
-
-const io = new SocketServer(server, {
-  cors: {
-    origin: ["http://localhost:5000"],
+const server:HTTPServer = http.createServer(app);
+const io:SocketServer = socket_io(server, {
+  cors: <CorsOptions>{
+    origin: ["*"],
     methods: ["GET", "POST"],
   },
+});
+
+const hostname = '127.0.0.1';
+const port = 3000;
+
+app.get("/", (req: Request, res: Response)=>{
+  res.status(200).contentType("html");
+  res.end("<h1>Hello World! from express application.</h1>\n");
+});
+
+app.get("/messages/:turn/:userId/", (req: Request, res: Response)=>{
+  const turn: number = parseInt(req.params.turn);
+  const userId: number = parseInt(req.params.userId);
+
+  conn.query(`SELECT * FROM chatapp_userschats WHERE senderId="${userId}" OR receiverId="${userId}";`, function (err:Error, result:usersChats[]) {
+    if (err) {
+      return res.end(err);
+    };
+    const data: usersChats[] = result.slice(turn,turn+10);
+    res.end(res.json(data));
+  });
 });
 
 const emailToSocketIdMap = new Map();
@@ -62,14 +73,4 @@ io.on("connection", (socket: Socket) => {
   });
 });
 
-const SERVER_PORT = process.env.PORT || 8080;
-server.listen(SERVER_PORT);
-
-const APP_PORT = process.env.PORT || 8000;
-app.listen(APP_PORT);
-
-process.on("SIGINT", () => {
-  server.close(() => {
-    process.exit(0);
-  });
-});
+server.listen(port, hostname);
