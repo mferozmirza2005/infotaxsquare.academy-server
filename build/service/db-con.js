@@ -1,5 +1,7 @@
-const mysql = require("mysql");
-const conn = mysql.createConnection({
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const mysql_1 = require("mysql");
+const conn = (0, mysql_1.createConnection)({
     user: "devtest",
     host: "52.207.51.35",
     port: 3306,
@@ -10,7 +12,4 @@ conn.connect(function (err) {
     if (err)
         throw err;
 });
-
-module.exports = {
-    conn: conn,
-};
+module.exports = conn;

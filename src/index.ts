@@ -5,22 +5,22 @@ import usersChats from "@/utils/usersChats";
 import roomData from "@/utils/roomData";
 import { CorsOptions } from "cors";
 
-const conn = require("./service/db-con").conn;
+const { conn } = require("./service/db-con");
+const { createServer } = require("http");
+const { Server } = require("socket.io");
 const express = require("express");
-const http = require("http");
-const socket_io = require("socket.io");
-
-const app:Application = express();
-const server:HTTPServer = http.createServer(app);
-const io:SocketServer = socket_io(server, {
-  cors: <CorsOptions>{
-    origin: ["*"],
-    methods: ["GET", "POST"],
-  },
-});
 
 const hostname = '127.0.0.1';
 const port = 3000;
+
+const app:Application = express();
+const http_server:HTTPServer = createServer(app);
+const io:SocketServer = new Server(http_server ,{
+  cors: <CorsOptions>{
+    origin: ["http://localhost:5000"],
+    methods: ["GET", "POST"],
+  },
+});
 
 app.get("/", (req: Request, res: Response)=>{
   res.status(200).contentType("html");
@@ -73,4 +73,4 @@ io.on("connection", (socket: Socket) => {
   });
 });
 
-server.listen(port, hostname);
+http_server.listen(port);
